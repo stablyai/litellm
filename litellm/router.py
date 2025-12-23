@@ -5002,6 +5002,11 @@ class Router:
                 parent_otel_span = _get_parent_otel_span_from_kwargs(kwargs)
                 total_tokens: float = standard_logging_object.get("total_tokens", 0)
 
+                # Apply cached tokens exclusion if configured
+                from litellm.litellm_core_utils.core_helpers import get_tokens_for_tpm
+                usage_object = (standard_logging_object.get("hidden_params") or {}).get("usage_object") or (standard_logging_object.get("metadata") or {}).get("usage_object")
+                tpm_tokens = get_tokens_for_tpm(int(total_tokens), usage_object)
+
                 # ------------
                 # Setup values
                 # ------------
@@ -5023,7 +5028,7 @@ class Router:
                 pipeline_operations.append(
                     RedisPipelineIncrementOperation(
                         key=tpm_key,
-                        increment_value=total_tokens,
+                        increment_value=tpm_tokens,
                         ttl=RoutingArgs.ttl.value,
                     )
                 )

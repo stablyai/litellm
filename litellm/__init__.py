@@ -265,6 +265,7 @@ ssl_ecdh_curve: Optional[str] = (
 )
 disable_streaming_logging: bool = False
 disable_token_counter: bool = False
+exclude_cached_tokens_from_tpm: bool = False  # When True, subtract cached_tokens from total_tokens in TPM calculations
 disable_add_transform_inline_image_block: bool = False
 disable_add_user_agent_to_request_tags: bool = False
 extra_spend_tag_headers: Optional[List[str]] = None
