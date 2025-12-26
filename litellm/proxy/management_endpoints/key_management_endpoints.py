@@ -2078,7 +2078,11 @@ async def generate_key_helper_fn(  # noqa: PLR0915
     if duration is None:  # allow tokens that never expire
         expires = None
     else:
-        expires = get_budget_reset_time(budget_duration=duration)
+        # Fix: Use duration_in_seconds() + timedelta instead of get_budget_reset_time()
+        # to ensure key expires exactly N time units from creation, not at standardized intervals
+        # See: https://github.com/BerriAI/litellm/issues/17642
+        duration_s = duration_in_seconds(duration=duration)
+        expires = datetime.now(timezone.utc) + timedelta(seconds=duration_s)
 
     if key_budget_duration is None:  # one-time budget
         key_reset_at = None
